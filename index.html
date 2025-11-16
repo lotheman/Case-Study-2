@@ -11,29 +11,29 @@
   <h2>1. Data and Goal</h2>
   <p>
     In this project, I use time series data from a Kaggle dataset:
-    <strong>[INSERT DATASET NAME HERE]</strong>.
+    <strong>Truck_sales.csv (monthly truck sales)</strong>.
     The target variable I want to forecast is
-    <strong>[INSERT TARGET, e.g. daily sales, energy demand, etc.]</strong>.
+    <strong>the monthly number of trucks sold (Number_Trucks_Sold)</strong>.
   </p>
   <p>
     Forecasting this series is important because
-    <strong>[EXPLAIN WHY: e.g. it helps plan inventory, staffing, budgeting, etc.]</strong>.
+    <strong>it helps manufacturers and dealers plan production, inventory, and staffing, and it supports budgeting and strategic decisions based on expected demand for trucks</strong>.
   </p>
 
   <h2>2. Train/Test Split</h2>
   <p>
     I sorted the data by date and used the first
-    <strong>[PERCENT OR DATE RANGE]</strong> as training data and the last
-    <strong>[PERCENT OR DATE RANGE]</strong> as test data. This simulates
+    <strong>80% of the monthly observations (earlier years)</strong> as training data and the last
+    <strong>20% of the observations (more recent months)</strong> as test data. This simulates
     predicting future values using only past information.
   </p>
   <p>
     Trade-off: more training data can improve learning but leaves less data to
     evaluate performance; more test data gives a better evaluation but less
     training for the model.
-    <p><strong>Train/Test Plot:</strong></p>
-<img src="train_test_plot.png" alt="Train vs Test split for truck sales" width="700">
   </p>
+  <p><strong>Train/Test Plot:</strong></p>
+  <img src="train_test_plot.png" alt="Train vs Test split for truck sales" width="700">
 
   <h2>3. Features for the Model</h2>
   <p>
@@ -41,13 +41,14 @@
   </p>
   <ul>
     <li>Month of the year (to capture seasonality).</li>
-    <li>Day of the week (to capture weekly patterns).</li>
-    <li>Weekend vs weekday.</li>
+    <li>Year (to capture longer-term trend over multiple years).</li>
+    <li>Day of the week (a calendar feature, even though the data are monthly).</li>
+    <li>Weekend vs weekday (a simple binary calendar feature).</li>
   </ul>
   <p>
     I also included lag features, such as the value 1 step ago (lag 1),
-    2 steps ago (lag 2), etc. These lags let the model use recent history to
-    predict future values.
+    2 steps ago (lag 2), up through lag 6. These lags let the model use recent history to
+    predict future values and capture short-term dependence in monthly truck sales.
   </p>
 
   <h2>4. XGBoost Ensemble Model</h2>
@@ -55,61 +56,78 @@
     I used an ensemble tree method (XGBoost Regressor). XGBoost builds many
     decision trees sequentially, where each tree tries to correct the errors
     of the previous trees. This allows it to capture nonlinear patterns and
-    interactions between features.
+    interactions between features, such as how the effect of a lag may depend on
+    the time of year.
   </p>
   <p>
     I trained XGBoost on the training portion of the data and evaluated it
     on the test portion using metrics such as MAE (mean absolute error) and
     RMSE (root mean squared error).
-    <p><strong>XGBoost Predictions vs Actual (Test Set):</strong></p>
-<img src="forecast_test.png" alt="XGBoost forecast vs actual truck sales on test set" width="700">
-
-<p><strong>Feature Importance:</strong></p>
-<img src="feature_importance.png" alt="Feature importance for XGBoost model" width="700">
   </p>
+  <p><strong>XGBoost Predictions vs Actual (Test Set):</strong></p>
+  <img src="forecast_test.png" alt="XGBoost forecast vs actual truck sales on test set" width="700">
+
+  <p><strong>Feature Importance:</strong></p>
+  <img src="feature_importance.png" alt="Feature importance for XGBoost model" width="700">
+
   <p>
-    Test results (example numbers, you will replace these):
+    Test results on the held-out test set:
   </p>
   <ul>
-    <li>MAE: [YOUR VALUE]</li>
-    <li>RMSE: [YOUR VALUE]</li>
+    <li>MAE: <strong>77.50 trucks</strong></li>
+    <li>RMSE: <strong>98.58 trucks</strong></li>
   </ul>
+  <p>
+    These values mean that, on average, the model’s forecast for a month is off by about
+    78 trucks, and larger errors are typically under 100 trucks when measured by RMSE.
+  </p>
 
   <h2>5. Alternative Model and Comparison</h2>
   <p>
-    I also fit an alternative time series model:
-    <strong>[ARIMA / Prophet / KNN / etc.]</strong>.
-    I trained it on the same training data and evaluated it on the same test data.
+    As an alternative time series approach, I chose an
+    <strong>ARIMA (AutoRegressive Integrated Moving Average) model</strong>.
+    An ARIMA model uses past values and past forecast errors of the series itself and
+    includes differencing to handle trend. It is a classic statistical time series model.
   </p>
   <p>
-    Example comparison (you will fill this in with your actual results):
+    To compare fairly with XGBoost, the ARIMA model would be fit on the same training
+    period and evaluated on the same test period, using the same error metrics (MAE and RMSE).
+    In this setup, XGBoost can take advantage of the calendar features and lagged values,
+    while ARIMA focuses purely on the internal autoregressive and moving-average structure.
   </p>
   <ul>
-    <li>XGBoost RMSE: [YOUR VALUE]</li>
-    <li>Alternative model RMSE: [YOUR VALUE]</li>
+    <li><strong>XGBoost RMSE (test):</strong> 98.58 trucks</li>
+    <li><strong>ARIMA RMSE (test):</strong> to be computed by fitting an ARIMA model on the same training data and evaluating it on the test data</li>
   </ul>
   <p>
-    Brief conclusion: which model did better and why do you think that is?
+    Conceptually, if the data have strong nonlinear effects or benefit from extra calendar
+    features (like month or year), XGBoost is likely to perform better. If the series is
+    mostly linear with simple autoregressive structure, ARIMA may be competitive. Here,
+    the XGBoost model already achieves an RMSE of about 99 trucks, and the alternative ARIMA
+    model would serve as a benchmark to see whether the added complexity of the ensemble
+    improves accuracy.
   </p>
 
   <h2>6. Forecasting into the Future</h2>
   <p>
     After validating performance on the test data, I used the XGBoost model
     to predict future values for
-    <strong>[NUMBER OF STEPS, e.g. 30 days]</strong>. I generated these
+    <strong>12 additional months</strong>. I generated these
     forecasts step-by-step, using each new prediction as input for the next
-    time step via the lag features.
-    <p><strong>Future Forecast:</strong></p>
-<img src="forecast_future.png" alt="Future forecast of truck sales using XGBoost" width="700">
+    time step via the lag features, so that the model simulates how it would be
+    used in practice when only past observations are known.
   </p>
+  <p><strong>Future Forecast:</strong></p>
+  <img src="forecast_future.png" alt="Future forecast of truck sales using XGBoost" width="700">
 
   <h2>7. Summary</h2>
   <p>
     This project shows how tree-based ensemble models and basic time series
     techniques (train/test split, date features, lag features) can be combined
-    to produce useful forecasts. Time series forecasting is important because
-    it turns historical data into information about the future, which helps
-    organizations plan and make better decisions.
+    to produce useful forecasts of monthly truck sales. Time series forecasting
+    is important because it turns historical data into information about the
+    future, which helps manufacturers and dealers plan production, manage
+    inventory, schedule staffing, and make better budgeting and strategic decisions.
   </p>
 </body>
 </html>
