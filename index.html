@@ -1,12 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>My Time Series Project</title>
+  <title>Time Series Forecasting Project</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-  <h1>My Time Series Forecasting Project</h1>
-  <p>Hello! This is a test page to make sure GitHub Pages works.</p>
-  <p>Later, I will describe my XGBoost model and show forecasts here.</p>
+  <h1>Time Series Forecasting with XGBoost</h1>
+
+  <h2>1. Data and Goal</h2>
+  <p>
+    In this project, I use time series data from a Kaggle dataset:
+    <strong>[INSERT DATASET NAME HERE]</strong>.
+    The target variable I want to forecast is
+    <strong>[INSERT TARGET, e.g. daily sales, energy demand, etc.]</strong>.
+  </p>
+  <p>
+    Forecasting this series is important because
+    <strong>[EXPLAIN WHY: e.g. it helps plan inventory, staffing, budgeting, etc.]</strong>.
+  </p>
+
+  <h2>2. Train/Test Split</h2>
+  <p>
+    I sorted the data by date and used the first
+    <strong>[PERCENT OR DATE RANGE]</strong> as training data and the last
+    <strong>[PERCENT OR DATE RANGE]</strong> as test data. This simulates
+    predicting future values using only past information.
+  </p>
+  <p>
+    Trade-off: more training data can improve learning but leaves less data to
+    evaluate performance; more test data gives a better evaluation but less
+    training for the model.
+  </p>
+
+  <h2>3. Features for the Model</h2>
+  <p>
+    From the original date column, I created several derived variables, such as:
+  </p>
+  <ul>
+    <li>Month of the year (to capture seasonality).</li>
+    <li>Day of the week (to capture weekly patterns).</li>
+    <li>Weekend vs weekday.</li>
+  </ul>
+  <p>
+    I also included lag features, such as the value 1 step ago (lag 1),
+    2 steps ago (lag 2), etc. These lags let the model use recent history to
+    predict future values.
+  </p>
+
+  <h2>4. XGBoost Ensemble Model</h2>
+  <p>
+    I used an ensemble tree method (XGBoost Regressor). XGBoost builds many
+    decision trees sequentially, where each tree tries to correct the errors
+    of the previous trees. This allows it to capture nonlinear patterns and
+    interactions between features.
+  </p>
+  <p>
+    I trained XGBoost on the training portion of the data and evaluated it
+    on the test portion using metrics such as MAE (mean absolute error) and
+    RMSE (root mean squared error).
+  </p>
+  <p>
+    Test results (example numbers, you will replace these):
+  </p>
+  <ul>
+    <li>MAE: [YOUR VALUE]</li>
+    <li>RMSE: [YOUR VALUE]</li>
+  </ul>
+
+  <h2>5. Alternative Model and Comparison</h2>
+  <p>
+    I also fit an alternative time series model:
+    <strong>[ARIMA / Prophet / KNN / etc.]</strong>.
+    I trained it on the same training data and evaluated it on the same test data.
+  </p>
+  <p>
+    Example comparison (you will fill this in with your actual results):
+  </p>
+  <ul>
+    <li>XGBoost RMSE: [YOUR VALUE]</li>
+    <li>Alternative model RMSE: [YOUR VALUE]</li>
+  </ul>
+  <p>
+    Brief conclusion: which model did better and why do you think that is?
+  </p>
+
+  <h2>6. Forecasting into the Future</h2>
+  <p>
+    After validating performance on the test data, I used the XGBoost model
+    to predict future values for
+    <strong>[NUMBER OF STEPS, e.g. 30 days]</strong>. I generated these
+    forecasts step-by-step, using each new prediction as input for the next
+    time step via the lag features.
+  </p>
+
+  <h2>7. Summary</h2>
+  <p>
+    This project shows how tree-based ensemble models and basic time series
+    techniques (train/test split, date features, lag features) can be combined
+    to produce useful forecasts. Time series forecasting is important because
+    it turns historical data into information about the future, which helps
+    organizations plan and make better decisions.
+  </p>
 </body>
 </html>
