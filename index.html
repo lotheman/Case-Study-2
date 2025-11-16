@@ -31,6 +31,8 @@
     Trade-off: more training data can improve learning but leaves less data to
     evaluate performance; more test data gives a better evaluation but less
     training for the model.
+    <p><strong>Train/Test Plot:</strong></p>
+<img src="train_test_plot.png" alt="Train vs Test split for truck sales" width="700">
   </p>
 
   <h2>3. Features for the Model</h2>
@@ -59,6 +61,11 @@
     I trained XGBoost on the training portion of the data and evaluated it
     on the test portion using metrics such as MAE (mean absolute error) and
     RMSE (root mean squared error).
+    <p><strong>XGBoost Predictions vs Actual (Test Set):</strong></p>
+<img src="forecast_test.png" alt="XGBoost forecast vs actual truck sales on test set" width="700">
+
+<p><strong>Feature Importance:</strong></p>
+<img src="feature_importance.png" alt="Feature importance for XGBoost model" width="700">
   </p>
   <p>
     Test results (example numbers, you will replace these):
@@ -92,6 +99,8 @@
     <strong>[NUMBER OF STEPS, e.g. 30 days]</strong>. I generated these
     forecasts step-by-step, using each new prediction as input for the next
     time step via the lag features.
+    <p><strong>Future Forecast:</strong></p>
+<img src="forecast_future.png" alt="Future forecast of truck sales using XGBoost" width="700">
   </p>
 
   <h2>7. Summary</h2>
